@@ -1,7 +1,12 @@
 @import '~bulma';
 
+body {
+  margin: 0 0;
+}
+
 .main {
-  margin: 50px 10%;
+  margin: 50px 1rem;
+  min-height: 500px;
 }
 
 .control-button {
@@ -32,7 +37,24 @@
   border: 1px solid black;
 }
 
+.tile {
+  background: none;
+  border: none !important;
+  outline: none;
+
+  .box {
+    border: none !important;
+    box-shadow: none;
+  }
+  .with-terminal {
+    padding: 0;
+    border: none;
+  }
+}
+
 #terminal {
+  min-height: 500px;
+
   .terminal-title {
     @extend .has-text-centered;
     font-family: monospace;
@@ -40,45 +62,45 @@
 
     font-size: 0.4rem;
 
-    @media screen and (min-width: 590px) and (max-width: 770px) {
-      font-size: 0.6rem;
-    }
-
-    @media screen and (min-width: 770px) and (max-width: 960px){
+    @media all and (min-width: 960px) {
       font-size: 0.8rem;
     }
 
-    @media screen and (min-width: 960px) {
-      font-size: 1rem;
+    @media all and (min-width: 770px) and (max-width: 960px) {
+      font-size: 0.6rem;
+    }
+
+    @media all and (min-width: 590px) and (max-width: 770px) {
+      font-size: 0.4rem;
     }
   }
-}
 
-.terminal-line {
-  * {
-    display: inline-block;
-    margin-right: 1rem;
-    vertical-align: middle;
-  }
+  .terminal-line {
+    * {
+      display: inline-block;
+      margin-right: 1rem;
+      vertical-align: middle;
+    }
 
-  i {
-    color: rgb(128, 196, 112); 
-    font-weight: 100;
-  }
+    i {
+      color: rgb(128, 196, 112); 
+      font-weight: 100;
+    }
 
-  .terminal-dir {
-    color: rgb(251, 81, 118); 
-  }
+    .terminal-dir {
+      color: rgb(251, 81, 118); 
+    }
 
     input {
-    background-color: inherit;
-    border: 0;
-    width: 80%;
-    color: #f1f1f1;
+      background-color: inherit;
+      border: 0;
+      width: 80%;
+      color: #f1f1f1;
 
-    &:focus {
-      border: none;
-      outline-width: 0;
+      &:focus {
+        border: none;
+        outline-width: 0;
+      }
     }
   }
 }

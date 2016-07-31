@@ -10,7 +10,13 @@ var template = `
 
 Mustache.parse(template);
 
-function submitLine(content, before=null, disabled=true) {
+// submitLine() creates a new terminal line in the terminal
+// if `before` is null it is added to the bottom of the terminal,
+// otherwise, it is placed before the provided `before` Node.
+// if disabled is true (default), then the input created has an attribute "disabled".
+// if cb is defined, it is called at the end of the function, 
+// with the newly generated line Node.
+function submitLine(content, before=null, disabled=true, cb=function(line){}) {
   var line = document.createElement('div');
   line.setAttribute('class', 'terminal-line');
 
@@ -23,13 +29,21 @@ function submitLine(content, before=null, disabled=true) {
   line.innerHTML = rendered;
   terminal.insertBefore(line, before);
 
-  return line;
+  cb(line);
 }
 
+// handler() return a closure wrapping the provided `line`
+// The returned closure calls submitLine on every event
+// where the KeyCode is 13 (<enter> key) and provides the
+// call with the wrapped line.
 function handler(line) {
   return function(event) {
     if (event.keyCode == 13) {
-      submitLine(event.target.value, line);  
+      var value = event.target.value;
+      submitLine(value, line, true, function(line) {
+        var text = document.createTextNode("command not found: " + value);
+        line.appendChild(text);
+      });  
       event.target.focus();
       event.target.value = "";
     }
@@ -37,6 +51,7 @@ function handler(line) {
 }
 
 module.exports = function() {
-  var line = submitLine("", null, false);
-  document.getElementsByClassName("terminal-button")[0].addEventListener("keydown", handler(line));
+  submitLine("", null, false, function(line) {
+    document.getElementsByClassName("terminal-button")[0].addEventListener("keydown", handler(line));
+  });
 };
