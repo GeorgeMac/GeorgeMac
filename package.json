@@ -1,0 +1,29 @@
+{
+  "name": "seadogs",
+  "version": "0.0.1",
+  "description": "Playing with webpack",
+  "main": "bundle.js",
+  "dependencies": {
+    "css-loader": "^0.23.1",
+    "font-awesome": "^4.6.3",
+    "mustache": "^2.2.1",
+    "style-loader": "^0.13.1"
+  },
+  "devDependencies": {
+    "file-loader": "^0.9.0",
+    "node-sass": "^3.8.0",
+    "path": "^0.12.7",
+    "sass-loader": "^4.0.0",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webpack",
+    "seadogs"
+  ],
+  "author": "George MacRorie",
+  "license": "ISC"
+}
