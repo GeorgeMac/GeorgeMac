@@ -1,8 +1,8 @@
 {
-  "name": "seadogs",
+  "name": "GeorgeMac",
   "version": "0.0.1",
   "description": "Playing with webpack",
-  "main": "bundle.js",
+  "main": "dist/bundle.js",
   "dependencies": {
     "css-loader": "^0.23.1",
     "font-awesome": "^4.6.3",
@@ -22,7 +22,7 @@
   },
   "keywords": [
     "webpack",
-    "seadogs"
+    "georgemac"
   ],
   "author": "George MacRorie",
   "license": "ISC"
