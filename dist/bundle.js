@@ -44,8 +44,13 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	// mv index.html -> dist/index.html
+	__webpack_require__(15);
+	// include stylesheets
 	__webpack_require__(1)
+	// include font awesome
 	__webpack_require__(5)
+	// run javascripts
 	__webpack_require__(13)()
 
 
@@ -1155,6 +1160,12 @@
 
 	}));
 
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "index.html";
 
 /***/ }
 /******/ ]);
