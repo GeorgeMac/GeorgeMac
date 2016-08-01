@@ -541,6 +541,14 @@
 	}
 
 	module.exports = function() {
+	  terminal.addEventListener("click", function(){
+	    var buttons = document.getElementsByClassName("terminal-button");
+	    Array.prototype.forEach.call(buttons, function(input) {
+	      if (!input.getAttribute("disabled")) {
+	        input.focus();
+	      }
+	    });
+	  });
 	  submitLine("", null, false, function(line) {
 	    document.getElementsByClassName("terminal-button")[0].addEventListener("keydown", handler(line));
 	  });
