@@ -44,15 +44,16 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
 	// mv index.html -> dist/index.html
 	__webpack_require__(1);
 	// include stylesheets
-	__webpack_require__(2)
+	__webpack_require__(2);
 	// include font awesome
-	__webpack_require__(6)
+	__webpack_require__(6);
 	// run javascripts
-	__webpack_require__(14)()
-
+	__webpack_require__(14)();
 
 /***/ },
 /* 1 */
@@ -490,13 +491,118 @@
 
 	'use strict';
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 	var Mustache = __webpack_require__(15);
 	var terminal = document.getElementById("terminal");
-	var template = `
-	  <i class="fa fa-arrow-right" aria-hidden="true"></i>
-	  <div class="terminal-dir">/home/george</div>
-	  <input type="text" class="terminal-button" value="{{ text }}" {{ attributes }}></input>
-	`;
+	var template = "\n  <i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>\n  <div class=\"terminal-dir\">/home/george</div>\n  <input type=\"text\" class=\"terminal-button\" value=\"{{ text }}\" {{ attributes }}></input>\n";
+
+	var Session = function () {
+	  function Session(fs) {
+	    _classCallCheck(this, Session);
+
+	    this.pwd = "/";
+	    this.fs = fs;
+	    this.commands = {
+	      'ls': this.ls.bind(this)
+	    };
+	  }
+
+	  _createClass(Session, [{
+	    key: "ls",
+	    value: function ls() {
+	      var args = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
+	      var files = [];
+	      var path = args.length == 0 ? '/' : args[0];
+	      if (path == '') {
+	        path = '/';
+	      }
+
+	      var format = function format(path) {
+	        // <span/>
+	        var span = document.createElement('span');
+	        // command output
+	        var content = document.createTextNode(path);
+	        // <span>command output</span>
+	        span.appendChild(content);
+	        return span;
+	      };
+
+	      return this.walk(path, function (path, result) {
+	        switch (typeof result === "undefined" ? "undefined" : _typeof(result)) {
+	          // when the result is a string, we have a file
+	          case 'string':
+	            return format(path);
+	          // when the result is an object, we have a directory
+	          case 'object':
+	            if (!Array.isArray(result)) {
+	              result = Object.keys(result);
+	            }
+
+	            return result.map(format);
+	        }
+
+	        // I don't know what we had there
+	        return format("something went wrong");
+	      }, function (path) {
+	        return format("ls: cannot access " + path + ": No such file or directory");
+	      });
+	    }
+	  }, {
+	    key: "walk",
+	    value: function walk(path, found) {
+	      var error = arguments.length <= 2 || arguments[2] === undefined ? function (path) {
+	        console.log(path);
+	      } : arguments[2];
+
+	      // strip trailing slashes
+	      path = path.replace(/[\/]+$/, '');
+	      // split path on separator
+	      var parts = path == '/' ? [''] : path.split('/');
+	      // normalise parts of path to start with a slash
+	      if (parts[0] == '') {
+	        parts[0] = '/';
+	      } else {
+	        parts.unshift('/');
+	      }
+
+	      // traverse the filesystem
+	      var result = this.fs;
+	      for (var part = parts.shift(); part !== undefined && result != undefined; part = parts.shift()) {
+	        result = result[part];
+	      }
+
+	      // if nothing can be found call error, otherwise, call found
+	      return result === undefined ? error(path) : found(path, result);
+	    }
+	  }, {
+	    key: "execute",
+	    value: function execute(line) {
+	      var args = line.replace(/[ ]{2,}/, " ").trim().split(' ');
+	      var command_str = args.shift();
+	      var command = this.commands[command_str];
+	      if (command !== undefined) {
+	        return command(args);
+	      }
+
+	      return document.createTextNode("command not found: " + command_str);
+	    }
+	  }]);
+
+	  return Session;
+	}();
+
+	var session = new Session({
+	  '/': {
+	    'blog': { 'welcome.md': '' },
+	    'README.md': "Some file contents"
+	  }
+	});
 
 	Mustache.parse(template);
 
@@ -506,7 +612,11 @@
 	// if disabled is true (default), then the input created has an attribute "disabled".
 	// if cb is defined, it is called at the end of the function, 
 	// with the newly generated line Node.
-	function submitLine(content, before=null, disabled=true, cb=function(line){}) {
+	function submitLine(content) {
+	  var before = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+	  var disabled = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+	  var cb = arguments.length <= 3 || arguments[3] === undefined ? function (line) {} : arguments[3];
+
 	  var line = document.createElement('div');
 	  line.setAttribute('class', 'terminal-line');
 
@@ -527,33 +637,41 @@
 	// where the KeyCode is 13 (<enter> key) and provides the
 	// call with the wrapped line.
 	function handler(line) {
-	  return function(event) {
+	  return function (event) {
 	    if (event.keyCode == 13) {
 	      var value = event.target.value;
-	      submitLine(value, line, true, function(line) {
-	        var text = document.createTextNode("command not found: " + value);
-	        line.appendChild(text);
-	      });  
+	      submitLine(value, line, true, function (line) {
+	        var result = session.execute(value);
+	        if (Array.isArray(result)) {
+	          result.map(function (item) {
+	            line.appendChild(item);
+	          });
+	        } else {
+	          line.appendChild(result);
+	        }
+	      });
 	      event.target.focus();
 	      event.target.value = "";
 	    }
 	  };
 	}
 
-	module.exports = function() {
-	  terminal.addEventListener("click", function(){
+	module.exports = function () {
+	  // map a click on to the terminal, to focus on the input
+	  terminal.addEventListener("click", function () {
 	    var buttons = document.getElementsByClassName("terminal-button");
-	    Array.prototype.forEach.call(buttons, function(input) {
+	    [].forEach.call(buttons, function (input) {
 	      if (!input.getAttribute("disabled")) {
 	        input.focus();
 	      }
 	    });
 	  });
-	  submitLine("", null, false, function(line) {
+
+	  // create the input line
+	  submitLine("", null, false, function (line) {
 	    document.getElementsByClassName("terminal-button")[0].addEventListener("keydown", handler(line));
 	  });
 	};
-
 
 /***/ },
 /* 15 */
