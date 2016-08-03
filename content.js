@@ -1,6 +1,7 @@
 'use strict';
 
 var Mustache = require("mustache");
+var pathr = require("path");
 var terminal = document.getElementById("terminal");
 var template = `
   <i class="fa fa-arrow-right" aria-hidden="true"></i>
@@ -9,8 +10,8 @@ var template = `
 `;
 
 class Session {
-  constructor(fs) {
-    this.pwd = "/";
+  constructor(pwd, fs) {
+    this.pwd = pwd;
     this.fs = fs;
     this.commands = {
       'ls': this.ls.bind(this)
@@ -19,9 +20,9 @@ class Session {
 
   ls(args=[]) {
     var files = [];
-    var path = args.length == 0 ? '/' : args[0];
+    var path = args.length == 0 ? '.' : args[0];
     if (path == '') {
-      path = '/'
+      path = '.'
     }
 
     var format = (path) => {
@@ -58,15 +59,11 @@ class Session {
 
   walk(path, found, error=(path) => { console.log(path) }) {
     // strip trailing slashes
-    path = path.replace(/[\/]+$/, '');
+    path = pathr.resolve(this.pwd, path);
     // split path on separator
-    var parts = path == '/' ? [''] : path.split('/');
-    // normalise parts of path to start with a slash
-    if(parts[0] == '') {
-      parts[0] = '/'
-    } else {
-      parts.unshift('/')
-    }
+    var parts = path == '/' ? [] : path.split('/');
+    // remove first blank
+    parts.shift();
 
     // traverse the filesystem
     var result = this.fs;
@@ -90,10 +87,12 @@ class Session {
   }
 }
 
-var session = new Session({
-  '/': {
-    'blog': {'welcome.md': ''},
-    'README.md': "Some file contents"
+var session = new Session('/home/george', {
+  'home': {
+    'george': {
+      'blog': {'welcome.md': ''},
+      'README.md': "Some file contents"
+    }
   }
 });
 
