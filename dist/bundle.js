@@ -518,45 +518,36 @@
 	    value: function ls() {
 	      var args = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
-	      var files = [];
-	      var path = args.length == 0 ? '.' : args[0];
-	      if (path == '') {
-	        path = '.';
-	      }
+	      // we're only interested in the first argument
+	      var path = args.length == 0 ? '' : args[0];
 
-	      var format = function format(path) {
-	        // <span/>
-	        var span = document.createElement('span');
-	        // command output
-	        var content = document.createTextNode(path);
-	        // <span>command output</span>
-	        span.appendChild(content);
-	        return span;
-	      };
+	      // save verbose binding madness
+	      var span = this.span;
 
-	      return this.walk(path, function (path, result) {
+	      // resolve the path provided
+	      return this.resolve(path, function (path, result) {
 	        switch (typeof result === "undefined" ? "undefined" : _typeof(result)) {
 	          // when the result is a string, we have a file
 	          case 'string':
-	            return format(path);
+	            return span(path);
 	          // when the result is an object, we have a directory
 	          case 'object':
 	            if (!Array.isArray(result)) {
 	              result = Object.keys(result);
 	            }
 
-	            return result.map(format);
+	            return result.map(span);
 	        }
 
 	        // I don't know what we had there
-	        return format("something went wrong");
+	        return span("something went wrong");
 	      }, function (path) {
-	        return format("ls: cannot access " + path + ": No such file or directory");
+	        return span("ls: cannot access " + path + ": No such file or directory");
 	      });
 	    }
 	  }, {
-	    key: "walk",
-	    value: function walk(path, found) {
+	    key: "resolve",
+	    value: function resolve(path, found) {
 	      var error = arguments.length <= 2 || arguments[2] === undefined ? function (path) {
 	        console.log(path);
 	      } : arguments[2];
@@ -588,6 +579,17 @@
 	      }
 
 	      return document.createTextNode("command not found: " + command_str);
+	    }
+	  }, {
+	    key: "span",
+	    value: function span(path) {
+	      // <span/>
+	      var span = document.createElement('span');
+	      // command output
+	      var content = document.createTextNode(path);
+	      // <span>command output</span>
+	      span.appendChild(content);
+	      return span;
 	    }
 	  }]);
 

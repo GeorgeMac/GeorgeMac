@@ -19,45 +19,33 @@ class Session {
   }
 
   ls(args=[]) {
-    var files = [];
-    var path = args.length == 0 ? '.' : args[0];
-    if (path == '') {
-      path = '.'
-    }
+    // we're only interested in the first argument
+    var path = args.length == 0 ? '' : args[0];
 
-    var format = (path) => {
-      // <span/>
-      var span = document.createElement('span');
-      // command output
-      var content = document.createTextNode(path);
-      // <span>command output</span>
-      span.appendChild(content);
-      return span;
-    };
+    // save verbose binding madness
+    var span = this.span;
 
-    return this.walk(path, function(path, result) {
+    // resolve the path provided
+    return this.resolve(path, function(path, result) {
       switch(typeof result) {
         // when the result is a string, we have a file
         case 'string':
-          return format(path);
+          return span(path);
         // when the result is an object, we have a directory
         case 'object':
           if (!Array.isArray(result)) {
             result = Object.keys(result)
           }
 
-          return result.map(format)
+          return result.map(span)
       }
 
       // I don't know what we had there
-      return format("something went wrong");
-    },
-    function(path){
-      return format("ls: cannot access " + path + ": No such file or directory");
-    });
+      return span("something went wrong");
+    }, (path)=>{ return span("ls: cannot access " + path + ": No such file or directory") });
   }
 
-  walk(path, found, error=(path) => { console.log(path) }) {
+  resolve(path, found, error=(path) => { console.log(path) }) {
     // strip trailing slashes
     path = pathr.resolve(this.pwd, path);
     // split path on separator
@@ -84,6 +72,16 @@ class Session {
     }
 
     return document.createTextNode("command not found: " + command_str);
+  }
+
+  span(path) {
+    // <span/>
+    var span = document.createElement('span');
+    // command output
+    var content = document.createTextNode(path);
+    // <span>command output</span>
+    span.appendChild(content);
+    return span;
   }
 }
 
