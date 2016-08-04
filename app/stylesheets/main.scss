@@ -56,6 +56,17 @@ body {
   }
 }
 
+#logo {
+  max-height: 10em;
+  margin-bottom: 0 !important;
+
+  svg {
+    max-height: 15rem;
+    display: block;
+    margin: 0 auto;
+  }
+}
+
 #terminal {
   min-height: 500px;
 

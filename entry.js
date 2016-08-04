@@ -8,3 +8,5 @@ require("font-awesome/css/font-awesome.css")
 require('./app/polyfill/custom_event.js')
 // run javascripts
 require("./content.js")()
+
+document.getElementById("logo").innerHTML = require("./app/assets/images/beard.svg");

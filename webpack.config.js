@@ -28,7 +28,11 @@ module.exports = {
       test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
       loader: "file"
     }, {
+      test: /\.svg$/,
+      loader: "raw-loader"
+    }, {
       test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+      exclude: [ path.resolve(__dirname, 'app/assets') ],
       loader: "url?limit=10000&mimetype=image/svg+xml"
     }]
   }
