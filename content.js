@@ -1,21 +1,154 @@
 'use strict';
 
-var Mustache = require("mustache");
 var pathr = require("path");
-var terminal = document.getElementById("terminal");
-var template = `
-  <i class="fa fa-arrow-right" aria-hidden="true"></i>
-  <div class="terminal-dir">/home/george</div>
-  <input type="text" class="terminal-button" value="{{ text }}" {{ attributes }}></input>
+var mustache = require("mustache");
+
+var line_template = `
+  <div class="terminal-control">
+    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+    <div class="terminal-dir">{{ pwd }}</div>
+  </div>
+  <div class="column">
+    <input type="text" class="terminal-input" value="{{ text }}" {{ attributes }}></input>
+  </div>
 `;
+
+mustache.parse(line_template);
+
+class Line {
+  constructor(content, dir, trigger=function(input) {}) {
+    this.node = document.createElement('div');
+    this.node.setAttribute('class', 'terminal-line columns');
+    this.node.innerHTML = mustache.render(line_template, { text: content, pwd: dir });
+    this.node.getElementsByTagName('input')[0].addEventListener('keydown', this.submit.bind(this));
+
+    this.result = document.createElement('div');
+    this.result.setAttribute('class', 'terminal-result columns');
+
+    this.trigger = trigger;
+  }
+
+  setOutput(output, pwd) {
+    this.disable();
+    this.node.removeEventListener('keydown', this.submit);
+
+    // build line result
+    if (Array.isArray(output)) {
+      output.map((item) => {
+        this.result.appendChild(item);
+      });
+    } else {
+      this.result.appendChild(output);
+    }
+  }
+
+  focus() {
+    this.getInputNode().focus();
+  }
+
+  disable() {
+    this.getInputNode().setAttribute('disabled', '');
+  }
+
+  getInputNode() {
+    return this.node.getElementsByClassName('terminal-input')[0]
+  }
+
+  submit(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      this.trigger(event.target.value);
+    }
+  };
+
+  appendTo(target) {
+    target.appendChild(this.node);
+    target.appendChild(this.result);
+  }
+}
 
 class Session {
   constructor(pwd, fs) {
-    this.pwd = pwd;
     this.fs = fs;
+    this.pwd = pwd;
+    this.terminal = document.getElementById("terminal");
+    this.terminal.addEventListener('terminalinput', this.submit.bind(this));
+    this.terminal.addEventListener('click', this.click.bind(this));
+
+    // initial input event
+    this.lines = [];
+    // submit first line
+    this.submit(Session.inputEvent(""));
+
+    // setup commands to be issued
     this.commands = {
+      'cd': this.cd.bind(this),
       'ls': this.ls.bind(this)
     };
+  }
+
+  static inputEvent(input) {
+    return new CustomEvent('terminalinput', { detail: input });
+  }
+
+  createInput() {
+    var terminal = this.terminal;
+    return new Line("", this.pwd, function(input) {
+      terminal.dispatchEvent(Session.inputEvent(input));
+    });
+  }
+
+  click(event) {
+    // focus on current input
+    this.lines[0].focus();
+  }
+
+  submit(event) {
+    if (event.type != 'terminalinput') {
+      return
+    }
+
+    // get previous line
+    var line = this.lines[0];
+    if (line !== undefined) {
+      // execute submission
+      var result = this.execute(event.detail);
+
+      // set output on previous line
+      line.setOutput(result, this.pwd);
+    }
+
+    // new blank input line
+    line = this.createInput();
+
+    // add to terminal
+    line.appendTo(this.terminal);
+
+    // focus on new line
+    line.focus();
+
+    // put new line on the front of out lines arrays
+    this.lines.unshift(line);
+  }
+
+  cd(args=[]) {
+    // we're only interested in the first argument
+    var path = args.length == 0 ? '' : args[0];
+
+    // save verbose binding madness
+    var span = this.span;
+
+    return this.resolve(path, ((path, result) => {
+      if (typeof result == "string") {
+        return span("cd: not a directory: " + path)
+      }
+
+      this.pwd = path;
+
+      return span("")
+    }).bind(this), (path) => {
+      return span("cd: no such file or directory: " + path)
+    });
   }
 
   ls(args=[]) {
@@ -63,15 +196,21 @@ class Session {
     return result === undefined ? error(path) : found(path, result)
   }
 
-  execute(line) {
-    var args = line.replace(/[ ]{2,}/, " ").trim().split(' ');
+  execute(input) {
+    if (input == "") {
+      var span = this.span("");
+      span.setAttribute('style', 'display: none;');
+      return span
+    }
+
+    var args = input.replace(/[ ]{2,}/, " ").trim().split(' ');
     var command_str = args.shift();
     var command = this.commands[command_str];
     if (command !== undefined) {
       return command(args);
     }
 
-    return document.createTextNode("command not found: " + command_str);
+    return this.span("command not found: " + command_str);
   }
 
   span(path) {
@@ -85,76 +224,20 @@ class Session {
   }
 }
 
-var session = new Session('/home/george', {
-  'home': {
-    'george': {
-      'blog': {'welcome.md': ''},
-      'README.md': "Some file contents"
-    }
-  }
-});
-
-Mustache.parse(template);
-
-// submitLine() creates a new terminal line in the terminal
-// if `before` is null it is added to the bottom of the terminal,
-// otherwise, it is placed before the provided `before` Node.
-// if disabled is true (default), then the input created has an attribute "disabled".
-// if cb is defined, it is called at the end of the function, 
-// with the newly generated line Node.
-function submitLine(content, before=null, disabled=true, cb=(line) => {}) {
-  var line = document.createElement('div');
-  line.setAttribute('class', 'terminal-line');
-
-  var parameters = { text: content };
-  if (disabled) {
-    parameters["attributes"] = "disabled";
-  }
-
-  var rendered = Mustache.render(template, parameters);
-  line.innerHTML = rendered;
-  terminal.insertBefore(line, before);
-
-  cb(line);
-}
-
-// handler() return a closure wrapping the provided `line`
-// The returned closure calls submitLine on every event
-// where the KeyCode is 13 (<enter> key) and provides the
-// call with the wrapped line.
-function handler(line) {
-  return function(event) {
-    if (event.keyCode == 13) {
-      var value = event.target.value;
-      submitLine(value, line, true, function(line) {
-        var result = session.execute(value);
-        if (Array.isArray(result)) {
-          result.map((item) => {
-            line.appendChild(item)
-          });
-        } else {
-          line.appendChild(result);
-        }
-      });  
-      event.target.focus();
-      event.target.value = "";
-    }
-  };
-}
-
 module.exports = function() {
-  // map a click on to the terminal, to focus on the input
-  terminal.addEventListener("click", () => {
-    var buttons = document.getElementsByClassName("terminal-button");
-    [].forEach.call(buttons, (input) => {
-      if (!input.getAttribute("disabled")) {
-        input.focus();
+  var session = new Session('/home/george', {
+    'home': {
+      'george': {
+        'blog': {'welcome.md': ''},
+        'README.md': "Some file contents"
       }
-    });
+    }
   });
 
-  // create the input line
-  submitLine("", null, false, (line) => {
-    document.getElementsByClassName("terminal-button")[0].addEventListener("keydown", handler(line));
+  // map a click on to the terminal, to focus on the input
+  terminal.addEventListener("click", () => {
+    [].forEach.call(document.getElementsByClassName("terminal-input"), (input) => {
+      input.getAttribute("disabled") ? null : input.focus();
+    });
   });
 };

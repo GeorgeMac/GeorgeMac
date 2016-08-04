@@ -9,6 +9,10 @@ body {
   min-height: 500px;
 }
 
+.column {
+  padding: 3px;
+}
+
 .control-button {
   font-size: 9pt;
   width: 11px;
@@ -76,7 +80,7 @@ body {
   }
 
   .terminal-line {
-    * {
+    i, .terminal-dir {
       display: inline-block;
       margin-right: 1rem;
       vertical-align: middle;
@@ -101,6 +105,14 @@ body {
         border: none;
         outline-width: 0;
       }
+    }
+  }
+
+  .terminal-result {
+    margin-left: 1rem;
+
+    span {
+      margin-right: 2rem;
     }
   }
 }
