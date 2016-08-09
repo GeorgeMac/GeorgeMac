@@ -15,11 +15,19 @@ var readme = `
   GeorgeMac.com
   =============
 
+  > see: github.com/georgemac/georgemac
+
   ## Implemented Commands
 
   cd  : change directory
   ls  : list directory
   cat : concatenate and print files (or just spit them out)
+
+  ## Roadmap
+
+  1. tab completion
+  2. syntax highlighting
+  3. open - simple pretend web browser?
 `
 
 var session = new Session('/home/george', {
