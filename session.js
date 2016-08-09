@@ -83,6 +83,7 @@ class Session {
     // setup commands to be issued
     this.commands = {
       'cd': this.cd.bind(this),
+      'cat': this.cat.bind(this),
       'ls': this.ls.bind(this)
     };
   }
@@ -129,6 +130,24 @@ class Session {
 
     // put new line on the front of out lines arrays
     this.lines.unshift(line);
+  }
+
+  cat(args=[]) {
+    // we're only interested in the first argument
+    var path = args.length == 0 ? '' : args[0];
+
+    // save verbose binding madness
+    var span = this.span;
+
+    return this.resolve(path, ((path, result) => {
+      if (typeof result == "object") {
+        return span("cat: " + path + ": Is a directory")
+      }
+
+      return span(result)
+    }).bind(this), (path) => {
+      return span("cat: " + path + ": No such file or directory")
+    });
   }
 
   cd(args=[]) {
@@ -224,20 +243,4 @@ class Session {
   }
 }
 
-module.exports = function() {
-  var session = new Session('/home/george', {
-    'home': {
-      'george': {
-        'blog': {'welcome.md': ''},
-        'README.md': "Some file contents"
-      }
-    }
-  });
-
-  // map a click on to the terminal, to focus on the input
-  terminal.addEventListener("click", () => {
-    [].forEach.call(document.getElementsByClassName("terminal-input"), (input) => {
-      input.getAttribute("disabled") ? null : input.focus();
-    });
-  });
-};
+module.exports = Session;
