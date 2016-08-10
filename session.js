@@ -50,6 +50,10 @@ class Line {
     this.getInputNode().setAttribute('disabled', '');
   }
 
+  hide() {
+    [ this.node, this.result ].map((node) => { node.setAttribute('style', 'display: none') } );
+  }
+
   getInputNode() {
     return this.node.getElementsByClassName('terminal-input')[0]
   }
@@ -83,8 +87,10 @@ class Session {
     // setup commands to be issued
     this.commands = {
       'cd': this.cd.bind(this),
+      'ls': this.ls.bind(this),
       'cat': this.cat.bind(this),
-      'ls': this.ls.bind(this)
+      'clear': this.clear.bind(this),
+      'history': this.history.bind(this),
     };
   }
 
@@ -195,6 +201,23 @@ class Session {
       // I don't know what we had there
       return span("something went wrong");
     }, (path)=>{ return span("ls: cannot access " + path + ": No such file or directory") });
+  }
+
+  clear(args=[]) {
+    this.lines.map((line) => { line.hide() });
+    return this.span("");
+  }
+
+  history(args=[]) {
+    return this.lines.map(function(line) {
+      var div = document.createElement('div');
+      div.setAttribute('style', 'width: 100%');
+
+      var content = document.createTextNode(line.getInputNode().value);
+      div.appendChild(content);
+
+      return div;
+    });
   }
 
   resolve(path, found, error=(path) => { console.log(path) }) {

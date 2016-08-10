@@ -19,9 +19,11 @@ var readme = `
 
   ## Implemented Commands
 
-  cd  : change directory
-  ls  : list directory
-  cat : concatenate and print files (or just spit them out)
+  cd: change directory
+  ls: list directory
+  cat: concatenate and print files (or just spit them out)
+  clear: clear the current session
+  history: see command history
 
   ## Roadmap
 
