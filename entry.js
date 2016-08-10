@@ -11,25 +11,27 @@ var Session = require("./session.js");
 
 document.getElementById("logo").innerHTML = require("./app/assets/images/beard.svg");
 
-var readme = `
-  GeorgeMac.com
-  =============
+var readme = `GeorgeMac.com
+=============
 
-  > see: github.com/georgemac/georgemac
+> see: github.com/georgemac/georgemac
 
-  ## Implemented Commands
+## Implemented Commands
 
-  cd: change directory
-  ls: list directory
-  cat: concatenate and print files (or just spit them out)
-  clear: clear the current session
-  history: see command history
+cd: change directory
+ls: list directory
+cat: concatenate and print files (or just spit them out)
+clear: clear the current session
+history: see command history
 
-  ## Roadmap
+## Now Supporting
 
-  1. tab completion
-  2. syntax highlighting
-  3. open - simple pretend web browser?
+- code highlighting! see output of cat
+
+## Roadmap
+
+1. tab completion
+3. open - simple pretend web browser?
 `
 
 var session = new Session('/home/george', {

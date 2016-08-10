@@ -2,6 +2,7 @@
 
 var pathr = require("path");
 var mustache = require("mustache");
+var hljs = require("highlight.js");
 
 var line_template = `
   <div class="terminal-control">
@@ -150,7 +151,20 @@ class Session {
         return span("cat: " + path + ": Is a directory")
       }
 
-      return span(result)
+      var ext = pathr.extname(path).substr(1);
+
+      var pre = document.createElement('pre');
+      var code = document.createElement('code');
+      pre.appendChild(code);
+
+      code.setAttribute('class', ext);
+
+      var content = document.createTextNode(result);
+      code.appendChild(content);
+
+      hljs.highlightBlock(code);
+
+      return pre;
     }).bind(this), (path) => {
       return span("cat: " + path + ": No such file or directory")
     });
