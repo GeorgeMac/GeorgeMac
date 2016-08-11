@@ -5,6 +5,14 @@ body {
   margin: 0 0;
 }
 
+pre {
+  background-color: inherit;
+
+  code {
+    background-color: transparent !important;
+  }
+}
+
 .main {
   margin: 50px 1rem;
   min-height: 500px;
