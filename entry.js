@@ -31,7 +31,7 @@ history: see command history
 ## Roadmap
 
 1. tab completion
-3. open - simple pretend web browser?
+2. open - simple pretend web browser?
 `
 
 var session = new Session('/home/george', {
