@@ -18,11 +18,12 @@ var readme = `GeorgeMac.com
 
 ## Implemented Commands
 
-cd: change directory
-ls: list directory
-cat: concatenate and print files (or just spit them out)
-clear: clear the current session
-history: see command history
+- cd: change directory
+- ls: list directory
+- cat: concatenate and print files (or just spit them out)
+- clear: clear the current session
+- history: see command history
+- open: mini browser for GeorgeMac.com
 
 ## Now Supporting
 
@@ -31,7 +32,6 @@ history: see command history
 ## Roadmap
 
 1. tab completion
-2. open - simple pretend web browser?
 `
 
 var session = new Session('/home/george', {

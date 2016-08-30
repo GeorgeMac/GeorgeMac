@@ -84,6 +84,20 @@ pre {
       background-color: rgb(246, 246, 246);
     }
 
+    section {
+      * {
+        margin-left: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      h1 { font-size: 2rem; }
+      h2 { font-size: 1.5rem; }
+
+      ul {
+        li { list-style: initial; }
+      }
+    }
+
     @media all and (min-width: 960px) {
       width: 900px;
     }

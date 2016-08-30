@@ -3,6 +3,7 @@
 var pathr = require("path");
 var mustache = require("mustache");
 var hljs = require("highlight.js");
+var markdown = require("markdown").markdown;
 
 var line_template = `
   <div class="terminal-control">
@@ -224,15 +225,37 @@ class Session {
   }
 
   open(args=[]) {
-    var browser = document.getElementById("browser");
-    browser.setAttribute("class", "modal is-active");
+    // we're only interested in the first argument
+    var path = args.length == 0 ? '' : args[0];
 
-    var cancels = browser.getElementsByClassName("modal-cancel");
-    [].forEach.call(cancels, (cancel) => {
-      cancel.addEventListener("click", (event) => { browser.setAttribute("class", "modal") });
-    });
+    // save verbose binding madness
+    var span = this.span;
 
-    return this.span("");
+    // resolve the path provided
+    return this.resolve(path, function(path, result) {
+      if (typeof result == "object") {
+        return span("open: " + path + ": Is a directory")
+      }
+
+      var content = result;
+      var ext = pathr.extname(path);
+      if (ext == ".md") {
+        content = markdown.toHTML(content);
+      }
+
+      var browser = document.getElementById("browser");
+      var section = browser.getElementsByClassName("modal-card-body")[0];
+      section.innerHTML = content;
+
+      browser.setAttribute("class", "modal is-active");
+
+      var cancels = browser.getElementsByClassName("modal-cancel");
+      [].forEach.call(cancels, (cancel) => {
+        cancel.addEventListener("click", (event) => { browser.setAttribute("class", "modal") });
+      });
+
+      return span("");
+    }, (path)=>{ return span("open: cannot access " + path + ": No such file") });
   }
 
   history(args=[]) {
