@@ -28,6 +28,7 @@ pre {
   height: 11px;
   border-radius: 50%;
   display: inline-block;
+  cursor: pointer;
 }
 
 .close-control-button {
@@ -59,6 +60,7 @@ pre {
     border: none !important;
     box-shadow: none;
   }
+
   .with-terminal {
     padding: 0;
     border: none;
@@ -73,6 +75,18 @@ pre {
     max-height: 15rem;
     display: block;
     margin: 0 auto;
+  }
+}
+
+#browser {
+  .modal-card {
+    .message-header {
+      background-color: rgb(246, 246, 246);
+    }
+
+    @media all and (min-width: 960px) {
+      width: 900px;
+    }
   }
 }
 

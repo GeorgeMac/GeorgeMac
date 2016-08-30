@@ -92,6 +92,7 @@ class Session {
       'cat': this.cat.bind(this),
       'clear': this.clear.bind(this),
       'history': this.history.bind(this),
+      'open': this.open.bind(this),
     };
   }
 
@@ -219,6 +220,18 @@ class Session {
 
   clear(args=[]) {
     this.lines.map((line) => { line.hide() });
+    return this.span("");
+  }
+
+  open(args=[]) {
+    var browser = document.getElementById("browser");
+    browser.setAttribute("class", "modal is-active");
+
+    var cancels = browser.getElementsByClassName("modal-cancel");
+    [].forEach.call(cancels, (cancel) => {
+      cancel.addEventListener("click", (event) => { browser.setAttribute("class", "modal") });
+    });
+
     return this.span("");
   }
 
