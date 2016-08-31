@@ -86,6 +86,9 @@ class Session {
     // submit first line
     this.submit(Session.inputEvent(""));
 
+    // setup "browser"
+    this.browser = new Browser();
+
     // setup commands to be issued
     this.commands = {
       'cd': this.cd.bind(this),
@@ -231,28 +234,16 @@ class Session {
     // save verbose binding madness
     var span = this.span;
 
+    var browser = this.browser;
+
     // resolve the path provided
     return this.resolve(path, function(path, result) {
       if (typeof result == "object") {
         return span("open: " + path + ": Is a directory")
       }
 
-      var content = result;
-      var ext = pathr.extname(path);
-      if (ext == ".md") {
-        content = markdown.toHTML(content);
-      }
-
-      var browser = document.getElementById("browser");
-      var section = browser.getElementsByClassName("modal-card-body")[0];
-      section.innerHTML = content;
-
-      browser.setAttribute("class", "modal is-active");
-
-      var cancels = browser.getElementsByClassName("modal-cancel");
-      [].forEach.call(cancels, (cancel) => {
-        cancel.addEventListener("click", (event) => { browser.setAttribute("class", "modal") });
-      });
+      // delegate down to Browser instance
+      browser.open(path, result);
 
       return span("");
     }, (path)=>{ return span("open: cannot access " + path + ": No such file") });
@@ -313,6 +304,33 @@ class Session {
     // <span>command output</span>
     span.appendChild(content);
     return span;
+  }
+}
+
+class Browser {
+  constructor() {
+    // get browser node
+    this.node = document.getElementById("browser");
+    // add click handlers to modal closers
+    [].forEach.call(this.node.getElementsByClassName("modal-cancel"), (cancel) => {
+      cancel.addEventListener("click", ((event) => { this.close() }).bind(this));
+    });
+  }
+
+  open(path, content) {
+    var ext = pathr.extname(path);
+    if (ext == ".md") {
+      content = markdown.toHTML(content);
+    }
+
+    var section = this.node.getElementsByClassName("modal-card-body")[0];
+    section.innerHTML = content;
+
+    this.node.setAttribute("class", "modal is-active");
+  }
+
+  close() {
+    this.node.setAttribute("class", "modal");
   }
 }
 
