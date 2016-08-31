@@ -328,6 +328,8 @@ class Browser {
       content = markdown.toHTML(content);
     }
 
+    window.location.hash = '#' + path;
+
     var fname = pathr.basename(path).split('.')[0];
     var title = this.node.getElementsByClassName('modal-title')[0];
     title.innerHTML = fname;
