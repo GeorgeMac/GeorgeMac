@@ -89,6 +89,11 @@ class Session {
     // setup "browser"
     this.browser = new Browser();
 
+    var hash = window.location.hash.substr(1);
+    if (hash != '') {
+      this.open([hash]);
+    }
+
     // setup commands to be issued
     this.commands = {
       'cd': this.cd.bind(this),
