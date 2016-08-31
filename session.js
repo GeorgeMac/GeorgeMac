@@ -328,6 +328,10 @@ class Browser {
       content = markdown.toHTML(content);
     }
 
+    var fname = pathr.basename(path).split('.')[0];
+    var title = this.node.getElementsByClassName('modal-title')[0];
+    title.innerHTML = fname;
+
     var section = this.node.getElementsByClassName("modal-card-body")[0];
     section.innerHTML = content;
 

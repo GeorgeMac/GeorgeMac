@@ -81,7 +81,15 @@ pre {
 #browser {
   .modal-card {
     .message-header {
+      min-height: 2.5rem;
       background-color: rgb(246, 246, 246);
+
+      .modal-title {
+        color: black;
+        margin: auto 1rem;
+        text-align: center;
+        display: inline-block;
+      }
     }
 
     section {
