@@ -1,14 +1,9 @@
-GeorgeMac.com
--------------
+:hedgehog: I'm George
+---------------------
 
-## Requirements
+I make stuff. Mostly to pay the bills, but sometimes for fun.
+I've written a lot of Go for web-based tech.
 
-  - node: `brew install node`
-  - npm: (should get it with node)
-  - webpack: `npm install -g webpack`
+These days I build @flipt-io :pirate_flag:
 
-## Build and View
-
-	> npm install
-	> webpack
-	> open dist/index.html
+Previously, I worked on @influxdata :hourglass:, @codeship :ship:, and @honeycombtv :bee:.
