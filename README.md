@@ -2,7 +2,7 @@
 ---------------------
 
 I make stuff. Mostly to pay the bills, but sometimes for fun.
-I've written a lot of Go for web-based tech.
+I've written a lot of Go, mostly for distributed systems.
 
 These days I build @flipt-io :pirate_flag:
 
