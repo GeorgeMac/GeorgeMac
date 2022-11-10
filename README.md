@@ -1,9 +1,11 @@
 :hedgehog: I'm George
 ---------------------
 
-I make stuff. Mostly to pay the bills, but sometimes for fun.
-I've written a lot of Go, mostly for distributed systems.
+I make stuff.
 
-These days I build @flipt-io :pirate_flag:
+Mostly to pay the bills and sometimes for fun.
+I've written a lot of Go, primarily for distributed systems.
 
-Previously, I worked on @influxdata :hourglass:, @codeship :ship:, and @honeycombtv :bee:.
+These days I build [flipt :pirate_flag:](github.com/flipt-io/flipt).
+
+Previously, I worked on [InfluxDB :hourglass:](https://github.com/influxdata/influxdb), [Codeship :ship:](https://github.com/codeship), and [Honeycomb TV :bee:](https://github.com/honeycomb-tv).
