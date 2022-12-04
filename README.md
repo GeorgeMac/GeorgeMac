@@ -9,3 +9,5 @@ I've written a lot of Go, primarily for distributed systems.
 These days I build [flipt :pirate_flag:](github.com/flipt-io/flipt).
 
 Previously, I worked on [InfluxDB :hourglass:](https://github.com/influxdata/influxdb), [Codeship :ship:](https://github.com/codeship), and [Honeycomb TV :bee:](https://github.com/honeycomb-tv).
+
+🐘 <a rel="me" href="https://hachyderm.io/@GeorgeMac">@GeorgeMac@hachyderm.io</a>
